@@ -1,43 +1,3 @@
-<style>
-    .profile-notification {
-    width: 300px; /* Sesuaikan lebar dropdown */
-}
-
-.pro-head {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-.pro-head img {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-}
-
-.pro-head span {
-    flex-grow: 1;
-}
-
-.pro-body {
-    padding: 0;
-}
-
-.pro-body li {
-    border-bottom: 1px solid #ddd;
-}
-
-.pro-body li:last-child {
-    border-bottom: none;
-}
-
-.dropdown-item {
-    padding: 10px 15px;
-}
-
-</style>
-
 <header class="navbar pcoded-header navbar-expand-lg navbar-light header-dark">
     <div class="m-header">
         <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
@@ -65,7 +25,7 @@
                             <span>{{ Auth::user()->name }}</span>
                         </div>
                         <ul class="pro-body">
-                            <li><a href="{{ route('profile.show') }}" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
+                            <li><a href="#" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
                             {{-- <li><a href="email_inbox.html" class="dropdown-item"><i class="feather icon-mail"></i> My
                                     Messages</a></li>
                             <li><a href="auth-signin.html" class="dropdown-item"><i class="feather icon-lock"></i> Lock

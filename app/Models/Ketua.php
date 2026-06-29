@@ -24,4 +24,36 @@ class Ketua extends Model
     {
         return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id', 'id_ekstrakurikuler');
     }
+
+    public function programKegiatan()
+    {
+        return $this->hasMany(
+            ProgramKegiatan::class,
+            'ketua_id',
+            'id_ketua'
+        );
+    }
+
+    public function kehadiran()
+    {
+        return $this->hasMany(
+            Kehadiran::class,
+            'ketua_id',
+            'id_ketua'
+        );
+    }
+
+    public function prestasi()
+    {
+        return $this->hasMany(
+            Prestasi::class,
+            'ketua_id',
+            'id_ketua'
+        );
+    }
+
+    public function pengajuanPertemuan()
+    {
+        return $this->hasMany(PengajuanPertemuan::class, 'ketua_id', 'id_ketua');
+    }
 }

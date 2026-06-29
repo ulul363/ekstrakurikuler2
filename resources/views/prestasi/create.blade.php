@@ -20,12 +20,10 @@
             </div>
         </div>
 
-        {{-- <pre>{{ print_r($daftaranggota, true) }}</pre> --}}
-
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
-                    <div class="card-header">Tambah Prestasi</div>
+                    <div class="card-header">Tambah Prestasi</div>=
                     <div class="card-body">
                         <form action="{{ route('prestasi.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -43,14 +41,26 @@
                                 <label for="nama_siswa">Nama Siswa</label>
                                 <select name="nama_siswa[]" id="nama_siswa" class="form-control" multiple required>
                                     @foreach($daftaranggota as $anggota)
-                                        <option value="{{ $anggota->nama }}">{{ $anggota->nama }} - {{ $anggota->kelas }}</option>
-                                    @endforeach
-                                </select>
-                                {{-- <select name="nama_siswa[]" class="form-control select2" multiple="multiple">
-                                    @foreach($daftaranggota as $anggota)
                                         <option value="{{ $anggota->nama }}">{{ $anggota->nama }}</option>
                                     @endforeach
-                                </select>                                 --}}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tingkat">Tingkat Prestasi</label>
+                                <select name="tingkat" id="tingkat"
+                                    class="form-control @error('tingkat') is-invalid @enderror" required>
+                                    <option value="" disabled selected>Pilih Tingkat</option>
+                                    <option value="kabupaten" {{ old('tingkat') == 'kabupaten' ? 'selected' : '' }}>
+                                        Kabupaten/Kota</option>
+                                    <option value="provinsi" {{ old('tingkat') == 'provinsi' ? 'selected' : '' }}>Provinsi
+                                    </option>
+                                    <option value="nasional" {{ old('tingkat') == 'nasional' ? 'selected' : '' }}>Nasional
+                                    </option>
+                                </select>
+                                @error('tingkat')
+                                    <span class="invalid-feedback" role="alert">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="form-group">
@@ -86,7 +96,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Initialize Select2 on the siswa select box
             $('#nama_siswa').select2({
                 placeholder: "Pilih nama siswa",
@@ -98,6 +108,12 @@
                 viewMode: "years",
                 minViewMode: "years"
             });
+
+            $('#nama_siswa').select2({
+                placeholder: "Pilih nama siswa",
+                allowClear: true
+            });
+
         });
     </script>
 @endsection

@@ -1,0 +1,167 @@
+.profile-notification {
+    width: 300px; /* Sesuaikan lebar dropdown */
+}
+
+.pro-head {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.pro-head img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.pro-head span {
+    flex-grow: 1;
+}
+
+.pro-body {
+    padding: 0;
+}
+
+.pro-body li {
+    border-bottom: 1px solid #ddd;
+}
+
+.pro-body li:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+}
+
+/* dashboard */
+/* --- Dashboard Cards Styling --- */
+.summary-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card .card-body {
+    padding: 25px;
+}
+
+.summary-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4099ff, #73b4ff);
+}
+.bg-gradient-success {
+    background: linear-gradient(45deg, #2ed8b6, #59e0c5);
+}
+.bg-gradient-warning {
+    background: linear-gradient(45deg, #ffb64d, #ffcb80);
+}
+.bg-gradient-danger {
+    background: linear-gradient(45deg, #ff5370, #ff869a);
+}
+
+/* --- Table Card Header Modernization --- */
+.card-modern {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    margin-bottom: 30px;
+}
+
+.card-modern .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid #f1f1f1;
+    padding: 20px 25px;
+}
+
+.card-modern .card-header h5 {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+/* chat */
+/* --- Chat Room Styling --- */
+.chat-card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.chat-header {
+    background: linear-gradient(45deg, #4099ff, #73b4ff);
+    color: white;
+}
+
+.chat-box {
+    height: 450px;
+    overflow-y: auto;
+    background-color: #e5ddd5; /* Warna background mirip WA */
+    padding: 20px;
+}
+
+.chat-message {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message.sent {
+    align-items: flex-end;
+}
+
+.chat-message.received {
+    align-items: flex-start;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.chat-message.sent .message-bubble {
+    background-color: #dcf8c6; /* Hijau muda */
+    border-top-right-radius: 0;
+}
+
+.chat-message.received .message-bubble {
+    background-color: #ffffff; /* Putih */
+    border-top-left-radius: 0;
+}
+
+.message-time {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* Scrollbar minimalis untuk chat */
+.chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+    background-color: #bbb;
+    border-radius: 3px;
+}

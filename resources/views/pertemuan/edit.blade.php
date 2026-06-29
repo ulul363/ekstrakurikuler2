@@ -7,71 +7,79 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Edit Pertemuan</h5>
+                            <h5 class="m-b-10">Edit Pengajuan Pertemuan</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i
                                         class="feather icon-home"></i></a></li>
                             <li class="breadcrumb-item"><a href="{{ route('pertemuan.index') }}">Pertemuan</a></li>
-                            <li class="breadcrumb-item"><a
-                                    href="{{ route('pertemuan.edit', $pertemuan->id_pengajuan_pertemuan) }}">Edit
-                                    Pertemuan</a></li>
+                            <li class="breadcrumb-item"><a href="#!">Edit</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card">
-                    <div class="card-header">Edit Pertemuan</div>
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-md-12">
+                <div class="card card-modern">
+                    <div class="card-header bg-warning">
+                        <h5 class="text-white mb-0"><i class="feather icon-edit"></i> Edit Jadwal Pertemuan</h5>
+                    </div>
                     <div class="card-body">
-                        <form action="{{ route('pertemuan.update', $pertemuan->id_pengajuan_pertemuan) }}" method="POST"
-                            enctype="multipart/form-data">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('pertemuan.update', $pertemuan->id_pengajuan) }}" method="POST">
                             @csrf
                             @method('PUT')
 
-                            <div class="form-group">
-                                <label for="hari">Hari</label>
-                                <select class="form-control" id="hari" name="hari" required>
-                                    <option value="">Pilih Hari</option>
-                                    <option value="senin" {{ old('hari', $pertemuan->hari) == 'senin' ? 'selected' : '' }}>
-                                        Senin</option>
-                                    <option value="selasa"
-                                        {{ old('hari', $pertemuan->hari) == 'selasa' ? 'selected' : '' }}>Selasa</option>
-                                    <option value="rabu" {{ old('hari', $pertemuan->hari) == 'rabu' ? 'selected' : '' }}>
-                                        Rabu</option>
-                                    <option value="kamis" {{ old('hari', $pertemuan->hari) == 'kamis' ? 'selected' : '' }}>
-                                        Kamis</option>
-                                    <option value="jumat" {{ old('hari', $pertemuan->hari) == 'jumat' ? 'selected' : '' }}>
-                                        Jumat</option>
-                                    <option value="sabtu" {{ old('hari', $pertemuan->hari) == 'sabtu' ? 'selected' : '' }}>
-                                        Sabtu</option>
-                                </select>
+                            <div class="form-group mb-4">
+                                <label class="font-weight-bold">Judul Pertemuan / Rapat <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="judul_pertemuan" class="form-control"
+                                    value="{{ old('judul_pertemuan', $pertemuan->judul_pertemuan) }}" required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="tanggal">Tanggal</label>
-                                <input type="date" class="form-control @error('tanggal') is-invalid @enderror"
-                                    id="tanggal" name="tanggal"
-                                    value="{{ old('tanggal', $pertemuan->tanggal->format('Y-m-d')) }}" required>
-                                @error('tanggal')
-                                    <span class="invalid-feedback" role="alert">{{ $message }}</span>
-                                @enderror
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Tanggal Rencana <span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" name="tanggal_rencana" class="form-control"
+                                            value="{{ old('tanggal_rencana', $pertemuan->tanggal_rencana) }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Waktu Mulai <span
+                                                class="text-danger">*</span></label>
+                                        <input type="time" name="waktu_rencana" class="form-control"
+                                            value="{{ old('waktu_rencana', \Carbon\Carbon::parse($pertemuan->waktu_rencana)->format('H:i')) }}"
+                                            required>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="waktu">Waktu</label>
-                                <input type="time" class="form-control @error('waktu') is-invalid @enderror"
-                                    id="waktu" name="waktu"
-                                    value="{{ old('waktu', $pertemuan->waktu->format('H:i')) }}" required>
-                                @error('waktu')
-                                    <span class="invalid-feedback" role="alert">{{ $message }}</span>
-                                @enderror
+                            <div class="form-group mb-4">
+                                <label class="font-weight-bold">Agenda / Deskripsi Singkat <span
+                                        class="text-danger">*</span></label>
+                                <textarea name="agenda_pertemuan" class="form-control" rows="4"
+                                    required>{{ old('agenda_pertemuan', $pertemuan->agenda_pertemuan) }}</textarea>
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Perbarui</button>
+                            <div class="text-right">
+                                <a href="{{ route('pertemuan.index') }}" class="btn btn-light mr-2">Batal</a>
+                                <button type="submit" class="btn btn-warning"><i class="feather icon-save"></i> Simpan
+                                    Perubahan</button>
+                            </div>
                         </form>
                     </div>
                 </div>

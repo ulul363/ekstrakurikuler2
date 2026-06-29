@@ -24,31 +24,46 @@ class Kehadiran extends Model
         'tanggal',
         'deskripsi',
         'berkas',
+        'jumlah_hadir',
+        'jumlah_anggota',
         'status',
-        'keterangan',
+        'keterangan_pembina',
     ];
 
-    /**
-     * Get the ekstrakurikuler associated with the kehadiran.
-     */
+    // 🔥 SPK: persentase kehadiran (INI PENTING UNTUK MARCOS)
+    public function getPersentaseKehadiranAttribute()
+    {
+        if (!$this->jumlah_anggota || $this->jumlah_anggota == 0) {
+            return 0;
+        }
+
+        return ($this->jumlah_hadir / $this->jumlah_anggota) * 100;
+    }
+
     public function ekstrakurikuler()
     {
-        return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id', 'id_ekstrakurikuler');
+        return $this->belongsTo(
+            Ekstrakurikuler::class,
+            'ekstrakurikuler_id',
+            'id_ekstrakurikuler'
+        );
     }
 
-    /**
-     * Get the ketua associated with the kehadiran.
-     */
     public function ketua()
     {
-        return $this->belongsTo(Ketua::class, 'ketua_id', 'id_ketua');
+        return $this->belongsTo(
+            Ketua::class,
+            'ketua_id',
+            'id_ketua'
+        );
     }
 
-    /**
-     * Get the pembina (verifikasi) associated with the kehadiran.
-     */
     public function pembina()
     {
-        return $this->belongsTo(Pembina::class, 'pembina_id', 'id_pembina');
+        return $this->belongsTo(
+            Pembina::class,
+            'pembina_id',
+            'id_pembina'
+        );
     }
 }

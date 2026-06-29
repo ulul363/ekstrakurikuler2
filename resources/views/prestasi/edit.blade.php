@@ -52,26 +52,6 @@
                                                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                                                 @enderror
                                             </div>
-                                            <div class="col">
-                                                <label for="kelas">Kelas</label>
-                                                <select name="kelas[]"
-                                                    class="form-control @error('kelas.*') is-invalid @enderror" required>
-                                                    <option value="">Pilih Kelas</option>
-                                                    @foreach (['X', 'XI', 'XII'] as $romawi)
-                                                        <optgroup label="Kelas {{ $romawi }}">
-                                                            @for ($i = 1; $i <= 10; $i++)
-                                                                <option value="{{ $romawi }} {{ $i }}"
-                                                                    {{ old('kelas.' . $index, $kelas[$index] ?? '') == $romawi . ' ' . $i ? 'selected' : '' }}>
-                                                                    {{ $romawi }} {{ $i }}
-                                                                </option>
-                                                            @endfor
-                                                        </optgroup>
-                                                    @endforeach
-                                                </select>
-                                                @error('kelas.*')
-                                                    <span class="invalid-feedback" role="alert">{{ $message }}</span>
-                                                @enderror
-                                            </div>
                                         </div>
                                         <button type="button"
                                             class="btn btn-danger mt-1 remove-form-group">Hapus</button>
@@ -80,8 +60,6 @@
                                     <p>Tidak ada siswa untuk ditampilkan</p>
                                 @endforelse
                             </div>
-                            <button type="button" id="add_nama_siswa" class="btn btn-secondary mb-3">Tambah Nama Siswa &
-                                Kelas</button>
 
                             <div class="form-group">
                                 <label for="tahun_ajaran">Tahun Ajaran</label>
@@ -127,19 +105,6 @@
                 '    <div class="col">' +
                 '        <label for="nama_siswa">Nama Siswa</label>' +
                 '        <input type="text" name="nama_siswa[]" class="form-control" required>' +
-                '    </div>' +
-                '    <div class="col">' +
-                '        <label for="kelas">Kelas</label>' +
-                '        <select name="kelas[]" class="form-control" required>' +
-                '            <option value="">Pilih Kelas</option>' +
-                '            @foreach (['X', 'XI', 'XII'] as $romawi)' +
-                '                <optgroup label="Kelas {{ $romawi }}">' +
-                '                    @for ($i = 1; $i <= 10; $i++)' +
-                '                        <option value="{{ $romawi }} {{ $i }}">{{ $romawi }} {{ $i }}</option>' +
-                '                    @endfor' +
-                '                </optgroup>' +
-                '            @endforeach' +
-                '        </select>' +
                 '    </div>' +
                 '</div>' +
                 '<button type="button" class="btn btn-danger mt-1 remove-form-group">Hapus</button>';

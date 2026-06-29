@@ -20,7 +20,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = ['name', 'email', 'password', 'role'];
+    protected $fillable = ['name', 'email', 'password'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,5 +47,15 @@ class User extends Authenticatable
     public function ketua()
     {
         return $this->hasOne(Ketua::class, 'user_id');
+    }
+
+    public function pesanTerkirim()
+    {
+        return $this->hasMany(Chat::class, 'pengirim_id');
+    }
+
+    public function pesanDiterima()
+    {
+        return $this->hasMany(Chat::class, 'penerima_id');
     }
 }

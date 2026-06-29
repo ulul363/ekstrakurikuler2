@@ -23,21 +23,40 @@ class ProgramKegiatan extends Model
         'deskripsi',
         'pembina_id',
         'status',
+        'status_pelaksanaan',
         'keterangan',
     ];
 
+    // 🔥 SPK: nilai program (target vs realisasi)
+    public function getNilaiProgramAttribute()
+    {
+        return $this->status_pelaksanaan === 'terlaksana' ? 100 : 50;
+    }
+
     public function ekstrakurikuler()
     {
-        return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id', 'id_ekstrakurikuler');
+        return $this->belongsTo(
+            Ekstrakurikuler::class,
+            'ekstrakurikuler_id',
+            'id_ekstrakurikuler'
+        );
     }
+
     public function ketua()
     {
-        return $this->belongsTo(Ketua::class, 'ketua_id', 'id_ketua');
+        return $this->belongsTo(
+            Ketua::class,
+            'ketua_id',
+            'id_ketua'
+        );
     }
 
     public function pembina()
     {
-        return $this->belongsTo(Pembina::class, 'pembina_id', 'id_pembina');
+        return $this->belongsTo(
+            Pembina::class,
+            'pembina_id',
+            'id_pembina'
+        );
     }
-
 }

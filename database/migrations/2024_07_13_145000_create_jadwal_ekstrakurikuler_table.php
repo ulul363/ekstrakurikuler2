@@ -4,22 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
+
     public function up(): void
     {
         Schema::create('jadwal_ekstrakurikuler', function (Blueprint $table) {
             $table->id('id_jadwal_ekstrakurikuler');
+
             $table->unsignedBigInteger('ekstrakurikuler_id');
-            $table->string('hari', 8);
+
+            $table->string('hari', 10);
+
             $table->time('waktu');
-            $table->string('lokasi', 30);
+
+            $table->string('lokasi', 100);
+
+            $table->boolean('aktif')->default(true);
+
             $table->timestamps();
 
-            $table->foreign('ekstrakurikuler_id')->references('id_ekstrakurikuler')->on('ekstrakurikuler')->onUpdate('restrict')->onDelete('restrict');
+            $table->foreign('ekstrakurikuler_id')
+                ->references('id_ekstrakurikuler')
+                ->on('ekstrakurikuler');
         });
     }
 

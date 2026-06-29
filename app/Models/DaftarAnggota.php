@@ -24,8 +24,4 @@ class DaftarAnggota extends Model
         return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id', 'id_ekstrakurikuler');
     }
 
-    public function prestasi()
-    {
-        return $this->hasMany(Prestasi::class, 'ekstrakurikuler_id', 'ekstrakurikuler_id');
-    }
 }

@@ -7,24 +7,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">
-                                @if (auth()->user()->hasRole('Ketua'))
-                                    Pengajuan Pertemuan
-                                @else
-                                    Daftar Pertemuan
-                                @endif
-                            </h5>
+                            <h5 class="m-b-10">Pengajuan Pertemuan</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i
                                         class="feather icon-home"></i></a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('pertemuan.index') }}">
-                                    @if (auth()->user()->hasRole('Ketua'))
-                                        Pengajuan Pertemuan
-                                    @else
-                                        Daftar Pertemuan
-                                    @endif
-                                </a></li>
+                            <li class="breadcrumb-item"><a href="#!">Manajemen Pertemuan</a></li>
                         </ul>
                     </div>
                 </div>
@@ -33,297 +21,120 @@
 
         <div class="row">
             <div class="col-xl-12">
-                <div class="card">
-                    <div class="card-header">
-                        @if (auth()->user()->hasRole('Ketua'))
-                            Pengajuan Pertemuan
-                        @else
-                            Daftar Pertemuan
-                        @endif
+                <div class="card card-modern">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Daftar Pengajuan Pertemuan Rutin</h5>
+                        @hasrole('Ketua')
+                        <a href="{{ route('pertemuan.create') }}" class="btn btn-primary btn-sm shadow-sm">
+                            <i class="feather icon-plus"></i> Ajukan Pertemuan
+                        </a>
+                        @endhasrole
                     </div>
                     <div class="card-body">
                         @if (session('success'))
-                            <div class="alert alert-success">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 {{ session('success') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
                             </div>
                         @endif
 
-                        @if (auth()->user()->hasRole('Ketua'))
-                            @can('pertemuan.create')
-                                <a href="{{ route('pertemuan.create') }}" class="btn btn-primary mb-3">
-                                    <i class="fa fa-plus"></i> Tambah Pertemuan
-                                </a>
-                            @endcan
-                        @endif
-
-                        <table id="tabelPembinaPertemuan" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Hari</th>
-                                    <th>Tanggal</th>
-                                    <th>Waktu</th>
-                                    <th>Waktu Verifikasi</th>
-                                    <th>Nama Pembina</th>
-                                    <th>Status</th>
-                                    <th>Keterangan</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pertemuan as $item)
+                        <div class="table-responsive">
+                            <table id="tabelPertemuan" class="table table-striped table-bordered table-hover">
+                                <thead class="thead-light">
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->hari }}</td>
-                                        <td>{{ $item->tanggal->format('d-m-Y') }}</td>
-                                        <td>{{ $item->waktu->format('H:i') }}</td>
-                                        <td>
-                                            @if ($item->waktu_verifikasi)
-                                                {{ $item->waktu_verifikasi->format('H:i') }}
-                                            @else
-                                                Belum diverifikasi
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->waktu_verifikasi)
-                                                {{ $item->pembina ? $item->pembina->nama : 'Belum diverifikasi' }}
-                                            @else
-                                                Belum diverifikasi
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->status == 'pending')
-                                                <span class="badge badge-warning">Pending</span>
-                                            @elseif ($item->status == 'disetujui')
-                                                <span class="badge badge-success">Disetujui</span>
-                                            @elseif ($item->status == 'ditolak')
-                                                <span class="badge badge-danger">Ditolak</span>
-                                            @else
-                                                <span class="badge badge-secondary">{{ $item->status }}</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{ $item->keterangan ?? 'Tidak ada keterangan' }}
-                                        </td>
-                                        <td>
-                                            @if (auth()->user()->hasRole('Pembina'))
-                                                @if ($item->status == 'pending')
-                                                    @can('pertemuan.verifikasi')
-                                                        <form id="approve-form-{{ $item->id_pengajuan_pertemuan }}"
-                                                            action="{{ route('pertemuan.verifikasi', $item->id_pengajuan_pertemuan) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            <input type="hidden" name="status" value="disetujui">
-                                                            <button type="button" class="btn btn-success btn-sm"
-                                                                onclick="confirmAction('approve', {{ $item->id_pengajuan_pertemuan }})">
-                                                                Disetujui
-                                                            </button>
-                                                        </form>
-                                                        <form id="reject-form-{{ $item->id_pengajuan_pertemuan }}"
-                                                            action="{{ route('pertemuan.verifikasi', $item->id_pengajuan_pertemuan) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            <input type="hidden" name="status" value="ditolak">
-                                                            <button type="button" class="btn btn-danger btn-sm"
-                                                                onclick="confirmAction('reject', {{ $item->id_pengajuan_pertemuan }})">
-                                                                Ditolak
-                                                            </button>
-                                                        </form>
-                                                    @endcan
-                                                @else
-                                                    @can('pertemuan.show')
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                                            data-target="#showModal{{ $item->id_pengajuan_pertemuan }}">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-
-                                                        @if ($item->status == 'ditolak')
-                                                            <form
-                                                                action="{{ route('chatroom.show', $item->id_pengajuan_pertemuan) }}"
-                                                                method="GET" style="display:inline;">
-                                                                @csrf
-                                                                <button type="submit"
-                                                                    class="btn btn-success btn-sm">Chat</button>
-                                                            </form>
-                                                        @endif
-                                                    @endcan
-                                                @endif
-                                            @elseif (auth()->user()->hasRole('Ketua'))
-                                                @if ($item->status == 'pending')
-                                                    @can('pertemuan.edit')
-                                                        <a href="{{ route('pertemuan.edit', $item->id_pengajuan_pertemuan) }}"
-                                                            class="btn btn-warning btn-sm">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('pertemuan.destroy')
-                                                        <form id="delete-form-{{ $item->id_pengajuan_pertemuan }}"
-                                                            action="{{ route('pertemuan.destroy', $item->id_pengajuan_pertemuan) }}"
-                                                            method="POST" style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="btn btn-danger btn-sm"
-                                                                onclick="confirmDelete('delete-form-{{ $item->id_pengajuan_pertemuan }}')">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    @endcan
-
-                                                    @can('pertemuan.show')
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                                            data-target="#showModal{{ $item->id_pengajuan_pertemuan }}">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-                                                    @endcan
-                                                @else
-                                                    @can('pertemuan.show')
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                                            data-target="#showModal{{ $item->id_pengajuan_pertemuan }}">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-
-                                                        @if ($item->status == 'ditolak')
-                                                            <form
-                                                                action="{{ route('chatroom.show', $item->id_pengajuan_pertemuan) }}"
-                                                                method="GET" style="display:inline;">
-                                                                @csrf
-                                                                <button type="submit"
-                                                                    class="btn btn-success btn-sm">Chat</button>
-                                                            </form>
-                                                        @endif
-                                                    @endcan
-                                                @endif
-                                            @endif
-                                        </td>
+                                        <th>No</th>
+                                        @hasrole('Admin')
+                                        <th>Ekskul</th> @endhasrole
+                                        <th>Judul Rapat</th>
+                                        <th>Jadwal Pelaksanaan</th>
+                                        <th>Agenda</th>
+                                        <th>Status</th>
+                                        <th>Keterangan Pembina</th> <th>Aksi</th>
                                     </tr>
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="showModal{{ $item->id_pengajuan_pertemuan }}"
-                                        tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Detail Pertemuan</h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
+                                </thead>
+                                <tbody>
+                                    @foreach ($pertemuan as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            @hasrole('Admin')
+                                            <td>{{ $item->ekstrakurikuler->nama }}</td> @endhasrole
+                                            <td class="font-weight-bold">{{ $item->judul_pertemuan }}</td>
+                                            <td>
+                                                <span class="d-block"><i class="feather icon-calendar text-primary"></i>
+                                                    {{ date('d M Y', strtotime($item->tanggal_rencana)) }}</span>
+                                                <span class="d-block"><i class="feather icon-clock text-warning"></i>
+                                                    {{ \Carbon\Carbon::parse($item->waktu_rencana)->format('H:i') }} WIB</span>
+                                            </td>
+                                            <td>{{ Str::limit($item->agenda_pertemuan, 50) }}</td>
+                                            <td>
+                                                @if ($item->status == 'pending')
+                                                    <span class="badge badge-warning px-2 py-1">Pending</span>
+                                                @elseif ($item->status == 'disetujui')
+                                                    <span class="badge badge-success px-2 py-1">Disetujui</span>
+                                                @else
+                                                    <span class="badge badge-danger px-2 py-1">Ditolak</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ $item->keterangan_pembina ?? 'Tidak ada keterangan' }}
+                                            </td>
+                                            <td>
+                                                {{-- AKSI UNTUK PEMBINA --}}
+                                                @hasrole('Pembina')
+                                                @if ($item->status == 'pending')
+                                                    <button type="button" class="btn btn-success btn-sm mb-1"
+                                                        onclick="confirmVerification('{{ route('pertemuan.verifikasi', $item->id_pengajuan) }}', 'disetujui')">
+                                                        <i class="feather icon-check"></i> Setujui
                                                     </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p><strong>Ketua:</strong> {{ $item->ketua->nama }}</p>
-                                                    <p><strong>Hari:</strong> {{ $item->hari }}</p>
-                                                    <p><strong>Tanggal:</strong> {{ $item->tanggal->format('d-m-Y') }}</p>
-                                                    <p><strong>Waktu:</strong> {{ $item->waktu->format('H:i') }}</p>
-                                                    <p><strong>Waktu Verifikasi:</strong>
-                                                        @if ($item->waktu_verifikasi)
-                                                            {{ $item->waktu_verifikasi->format('H:i') }}
-                                                        @else
-                                                            Belum diverifikasi
-                                                        @endif
-                                                    </p>
-                                                    <p><strong>Nama Pembina:</strong>
-                                                        @if ($item->pembina)
-                                                            {{ $item->pembina->nama }}
-                                                        @else
-                                                            Belum diverifikasi
-                                                        @endif
-                                                    </p>
+                                                    <button type="button" class="btn btn-danger btn-sm mb-1"
+                                                        onclick="confirmVerification('{{ route('pertemuan.verifikasi', $item->id_pengajuan) }}', 'ditolak')">
+                                                        <i class="feather icon-x"></i> Tolak
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted"><i class="feather icon-check-circle"></i>
+                                                        Selesai</span>
+                                                @endif
+                                                @endhasrole
 
-                                                    <p><strong>Status:</strong>
-                                                        @if ($item->status == 'pending')
-                                                            <span class="badge badge-warning">Pending</span>
-                                                        @elseif ($item->status == 'disetujui')
-                                                            <span class="badge badge-success">Disetujui</span>
-                                                        @elseif ($item->status == 'ditolak')
-                                                            <span class="badge badge-danger">Ditolak</span>
-                                                        @endif
-                                                    </p>
-
-                                                    <p><strong>Keterangan:</strong>
-                                                        {{ $item->keterangan ?? 'Tidak ada keterangan' }}</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                                {{-- AKSI UNTUK KETUA --}}
+                                                @hasrole('Ketua')
+                                                @if ($item->status == 'pending')
+                                                    <a href="{{ route('pertemuan.edit', $item->id_pengajuan) }}"
+                                                        class="btn btn-warning btn-sm mb-1">
+                                                        <i class="feather icon-edit"></i>
+                                                    </a>
+                                                    <form id="delete-pertemuan-{{ $item->id_pengajuan }}"
+                                                        action="{{ route('pertemuan.destroy', $item->id_pengajuan) }}" method="POST"
+                                                        style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button" class="btn btn-danger btn-sm mb-1"
+                                                            onclick="confirmDelete('delete-pertemuan-{{ $item->id_pengajuan }}')">
+                                                            <i class="feather icon-trash-2"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <span class="text-muted"><i class="feather icon-lock"></i> Terkunci</span>
+                                                @endif
+                                                @endhasrole
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
 
-    <!-- Include SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+@section('scripts')
     <script>
-        function confirmDelete(formId) {
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: 'Apakah Anda yakin ingin menghapus data ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Hapus',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(formId).submit();
-                }
-            });
-        }
-
-        function confirmAction(action, id) {
-            let title, text, confirmButtonText, formId;
-            if (action === 'approve') {
-                title = 'Konfirmasi Persetujuan';
-                text = 'Apakah Anda yakin ingin menyetujui pertemuan ini?';
-                confirmButtonText = 'Setujui';
-                formId = `approve-form-${id}`;
-            } else if (action === 'reject') {
-                title = 'Konfirmasi Penolakan';
-                text = 'Apakah Anda yakin ingin menolak pertemuan ini?';
-                confirmButtonText = 'Tolak';
-                formId = `reject-form-${id}`;
-            }
-
-            Swal.fire({
-                title: title,
-                text: text,
-                input: 'textarea',
-                inputLabel: 'Keterangan (opsional):',
-                inputPlaceholder: 'Masukkan keterangan...',
-                inputAttributes: {
-                    'aria-label': 'Masukkan keterangan'
-                },
-                showCancelButton: true,
-                confirmButtonText: confirmButtonText,
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Set the textarea value to the hidden input field
-                    const form = document.getElementById(formId);
-                    const keteranganInput = form.querySelector('input[name="keterangan"]');
-                    if (!keteranganInput) {
-                        // Create hidden input if it does not exist
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'keterangan';
-                        hiddenInput.value = result.value;
-                        form.appendChild(hiddenInput);
-                    } else {
-                        // Update existing hidden input
-                        keteranganInput.value = result.value;
-                    }
-                    form.submit();
-                }
-            });
-        }
+        $(document).ready(function () {
+            $('#tabelPertemuan').DataTable();
+        });
     </script>
 @endsection

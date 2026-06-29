@@ -62,11 +62,21 @@
 
                             <div class="form-group">
                                 <label for="deskripsi">Deskripsi</label>
-                                <textarea name="deskripsi" id="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" required
+                                <textarea name="deskripsi" id="deskripsi"
+                                    class="form-control @error('deskripsi') is-invalid @enderror" required
                                     style="width: 100%; height: 150px;">{{ old('deskripsi', $kehadiran->deskripsi) }}</textarea>
                                 @error('deskripsi')
                                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                                 @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="jumlah_hadir">Jumlah Hadir</label>
+                                <input type="number" name="jumlah_hadir" class="form-control" placeholder="Jumlah Hadir"
+                                    required>
+                                <label for="jumlah_anggota">Jumlah Anggota</label>
+                                <input type="number" name="jumlah_anggota" class="form-control" placeholder="Total Anggota"
+                                    required>
                             </div>
 
                             <div class="form-group">

@@ -64,18 +64,13 @@ class KetuaController extends Controller
             'user_id' => 'required|exists:users,id',
             'nis' => 'required|string|max:20|unique:ketua',
             'nama' => 'required|string|max:50',
-            'alamat' => 'required|string|max:50',
-            'jk' => 'required|in:L,P',
-            'no_hp' => 'required|string|max:15',
+
         ]);
 
         Ketua::create([
             'user_id' => $validated['user_id'],
             'nis' => $validated['nis'],
             'nama' => $validated['nama'],
-            'alamat' => $validated['alamat'],
-            'jk' => $validated['jk'],
-            'no_hp' => $validated['no_hp'],
         ]);
 
         return redirect()->route('ketua.index')->with('success', 'Ketua berhasil dibuat.');
@@ -101,9 +96,7 @@ class KetuaController extends Controller
             // 'ekstrakurikuler_id' => ['required', 'exists:ekstrakurikuler,id_ekstrakurikuler', Rule::unique('ketua')->ignore($id, 'id_ketua')],
             'nis' => 'required|string|max:20|unique:ketua,nis,' . $id . ',id_ketua',
             'nama' => 'required|string|max:50',
-            'alamat' => 'required|string|max:50',
-            'jk' => 'required|in:L,P',
-            'no_hp' => 'required|string|max:15',
+
         ]);
 
         $ketua = Ketua::findOrFail($id);
@@ -132,21 +125,24 @@ class KetuaController extends Controller
     {
         try {
             $ketua = Ketua::findOrFail($id);
-            $user = User::findOrFail($ketua->user_id);
 
             $ketua->delete();
-            $user->delete();
 
-            return redirect()->route('ketua.index')->with('success', 'Data ketua dan akun pengguna berhasil dihapus.');
+            return redirect()
+                ->route('ketua.index')
+                ->with('success', 'Data ketua berhasil dihapus.');
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() == '23000') {
-                return redirect()->route('ketua.index')->with('error', 'Ketua tidak dapat dihapus karena sudah digunakan di tabel lain.');
+                return redirect()
+                    ->route('ketua.index')
+                    ->with('error', 'Ketua tidak dapat dihapus karena sudah digunakan di tabel lain.');
             }
 
-            return redirect()->route('ketua.index')->with('error', 'Terjadi kesalahan saat menghapus ketua.');
+            return redirect()
+                ->route('ketua.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus ketua.');
         }
     }
-
     public function status(Request $request, $id)
     {
         $ketua = Ketua::findOrFail($id);

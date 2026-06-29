@@ -2,28 +2,29 @@
 
 namespace App\Models;
 
-use App\Models\Ketua;
-use App\Models\Pembina;
-use App\Models\PengajuanPertemuan;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
 {
     use HasFactory;
 
-    protected $table = 'chat';
-    protected $primaryKey = 'id_chat';
+    protected $table = 'chats';
 
     protected $fillable = [
-        'id_chat',
-        'pengirim',
+        'pengirim_id',
+        'penerima_id',
         'pesan',
-        'pengajuan_pertemuan_id'
+        'is_read'
     ];
 
-    public function pengajuanPertemuan()
+    public function pengirim()
     {
-        return $this->belongsTo(PengajuanPertemuan::class, 'pengajuan_pertemuan_id', 'id_pengajuan_pertemuan');
+        return $this->belongsTo(User::class, 'pengirim_id');
+    }
+
+    public function penerima()
+    {
+        return $this->belongsTo(User::class, 'penerima_id');
     }
 }

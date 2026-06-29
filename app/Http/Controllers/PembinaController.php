@@ -15,8 +15,7 @@ class PembinaController extends Controller
     public function index()
     {
         $pembina = Pembina::with('user')->get();
-        $cek = Pembina::find(9)->first();
-        // dd($cek->ekstrakurikuler->nama);
+
         return view('pembina.index', compact('pembina'));
     }
 
@@ -66,9 +65,6 @@ class PembinaController extends Controller
             // 'ekstrakurikuler_id' => 'required|exists:ekstrakurikuler,id_ekstrakurikuler',
             'nip' => 'required|string|max:20|unique:pembina',
             'nama' => 'required|string|max:50',
-            'alamat' => 'required|string|max:50',
-            'jk' => 'required|in:L,P',
-            'no_hp' => 'required|string|max:15',
         ]);
 
         Pembina::create([
@@ -76,9 +72,6 @@ class PembinaController extends Controller
             // 'ekstrakurikuler_id' => $validated['ekstrakurikuler_id'],
             'nip' => $validated['nip'],
             'nama' => $validated['nama'],
-            'alamat' => $validated['alamat'],
-            'jk' => $validated['jk'],
-            'no_hp' => $validated['no_hp'],
         ]);
 
         return redirect()->route('pembina.index')->with('success', 'Pembina berhasil dibuat.');
@@ -103,9 +96,6 @@ class PembinaController extends Controller
             // 'ekstrakurikuler_id' => ['required', 'exists:ekstrakurikuler,id_ekstrakurikuler'],
             'nip' => 'required|string|max:20|unique:pembina,nip,' . $id . ',id_pembina',
             'nama' => 'required|string|max:50',
-            'alamat' => 'required|string|max:50',
-            'jk' => 'required|in:L,P',
-            'no_hp' => 'required|string|max:15',
         ]);
 
         $pembina = Pembina::findOrFail($id);
@@ -134,25 +124,28 @@ class PembinaController extends Controller
     {
         try {
             $pembina = Pembina::findOrFail($id);
-            $user = User::findOrFail($pembina->user_id);
 
             $pembina->delete();
-            $user->delete();
 
-            return redirect()->route('pembina.index')->with('success', 'Data pembina dan akun pengguna berhasil dihapus.');
+            return redirect()
+                ->route('pembina.index')
+                ->with('success', 'Data pembina berhasil dihapus.');
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() == '23000') {
-                return redirect()->route('pembina.index')->with('error', 'Pembina tidak dapat dihapus karena sudah digunakan di tabel lain.');
+                return redirect()
+                    ->route('pembina.index')
+                    ->with('error', 'Pembina tidak dapat dihapus karena sudah digunakan di tabel lain.');
             }
 
-            return redirect()->route('pembina.index')->with('error', 'Terjadi kesalahan saat menghapus pembina.');
+            return redirect()
+                ->route('pembina.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus pembina.');
         }
     }
 
     public function status(Request $request, $id)
     {
         $pembina = Pembina::findOrFail($id);
-        // dd($request->status);
         $pembina->status = $request->status;
         $pembina->save();
 

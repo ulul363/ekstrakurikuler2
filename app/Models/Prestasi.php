@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Models\Ketua;
 use App\Models\Pembina;
 use App\Models\Ekstrakurikuler;
-use App\Models\DaftarAnggota;
+// use App\Models\DaftarAnggota;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -16,29 +16,60 @@ class Prestasi extends Model
     protected $table = 'prestasi';
     protected $primaryKey = 'id_prestasi';
 
-    protected $fillable = ['ekstrakurikuler_id', 'ketua_id', 'pembina_id', 'prestasi', 'nama_siswa', 'kelas', 'tahun_ajaran', 'berkas', 'keterangan', 'status'];
+    protected $fillable = [
+        'ekstrakurikuler_id',
+        'ketua_id',
+        'pembina_id',
+        'prestasi',
+        'tingkat',
+        'skor_prestasi',
+        'nama_siswa',
+        'tahun_ajaran',
+        'berkas',
+        'status',
+    ];
 
     protected $casts = [
-        'nama_siswa' => 'array', // Menyimpan nama siswa sebagai array
+        'nama_siswa' => 'array',
     ];
+
+    protected static function booted()
+    {
+        static::saving(function ($prestasi) {
+            $prestasi->skor_prestasi = match ($prestasi->tingkat) {
+                'nasional' => 100,
+                'provinsi' => 80,
+                'kabupaten' => 60,
+                'kecamatan' => 40,
+                default => 20
+            };
+        });
+    }
 
     public function ekstrakurikuler()
     {
-        return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id', 'id_ekstrakurikuler');
+        return $this->belongsTo(
+            Ekstrakurikuler::class,
+            'ekstrakurikuler_id',
+            'id_ekstrakurikuler'
+        );
     }
 
     public function ketua()
     {
-        return $this->belongsTo(Ketua::class, 'ketua_id', 'id_ketua');
+        return $this->belongsTo(
+            Ketua::class,
+            'ketua_id',
+            'id_ketua'
+        );
     }
 
     public function pembina()
     {
-        return $this->belongsTo(Pembina::class, 'pembina_id', 'id_pembina');
-    }
-
-    public function daftarAnggota()
-    {
-        return $this->hasMany(DaftarAnggota::class, 'ekstrakurikuler_id', 'ekstrakurikuler_id');
+        return $this->belongsTo(
+            Pembina::class,
+            'pembina_id',
+            'id_pembina'
+        );
     }
 }

@@ -2,125 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
 use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\PengajuanPertemuan;
-use Spatie\Permission\Models\Role;
 
 class ChatController extends Controller
 {
     public function index()
     {
-        //
+        $authId = auth()->id();
+        // Ambil semua user kecuali diri sendiri
+        $users = User::where('id', '!=', $authId)->get();
+        return view('chat.index', compact('users'));
     }
 
-    public function create()
+    public function show($receiverId)
     {
-        //
-    }
+        $authId = auth()->id();
+        $receiver = User::findOrFail($receiverId);
 
-    public function fetch($id)
-    {
-        $chats = Chat::where('pengajuan_pertemuan_id', $id)->get();
-        return response()->json($chats);
+        $messages = Chat::where(function ($query) use ($authId, $receiverId) {
+            $query->where('pengirim_id', $authId)->where('penerima_id', $receiverId);
+        })->orWhere(function ($query) use ($authId, $receiverId) {
+            $query->where('pengirim_id', $receiverId)->where('penerima_id', $authId);
+        })->orderBy('created_at', 'asc')->get();
+
+        Chat::where('pengirim_id', $receiverId)->where('penerima_id', $authId)->update(['is_read' => true]);
+
+        return view('chat.show', compact('messages', 'receiver'));
     }
 
     public function store(Request $request)
     {
+        // Validasi disamakan dengan nama input di Blade
         $request->validate([
-            'pengajuan_pertemuan_id' => 'required|exists:pengajuan_pertemuan,id_pengajuan_pertemuan',
-            'pesan' => 'required|string|max:255',
+            'receiver_id' => 'required',
+            'pesan' => 'required|string'
         ]);
 
-        try {
-            Chat::create([
-                'pengajuan_pertemuan_id' => $request->pengajuan_pertemuan_id,
-                'pengirim' => auth()->user()->id,
-                'pesan' => $request->pesan,
-            ]);
+        Chat::create([
+            'pengirim_id' => auth()->id(),
+            'penerima_id' => $request->receiver_id,
+            'pesan' => $request->pesan,
+            'is_read' => false
+        ]);
 
-            // Return JSON response
-            return response()->json(['message' => 'Yey Chat Terkirim']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
-        }
-    }
-
-
-    public function show($id)
-    {
-        $pertemuan = PengajuanPertemuan::findOrFail($id);
-        $chats = Chat::where('pengajuan_pertemuan_id', $id)->get();
-
-        // Contoh: Mendapatkan data Pembina dan Ketua berdasarkan peran (role)
-        $pembina = User::role('Pembina')->first(); // Sesuaikan dengan logika bisnis Anda
-        $ketua = User::role('Ketua')->first(); // Sesuaikan dengan logika bisnis Anda
-
-        return view('chatroom.show', compact('pertemuan', 'chats', 'pembina', 'ketua'));
-    }
-
-    public function edit(string $id)
-    {
-        //
-    }
-
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    private function canChat($sender, $receiver)
-    {
-        if ($sender->hasRole('Ketua') && $receiver->hasRole('Pembina')) {
-            return true;
-        }
-
-        if ($sender->hasRole('Pembina') && ($receiver->hasRole('Ketua') || $receiver->hasRole('Admin'))) {
-            return true;
-        }
-
-        return false;
-    }
-
-    // public function getNewMessages($id)
-    // {
-    //     Log::info('Fetching new messages for meeting id: ' . $id);
-
-    //     if (!auth()->check()) {
-    //         Log::warning('User not authenticated');
-    //         return response('Unauthorized', 401);
-    //     }
-
-    //     $chats = Chat::where('pengajuan_pertemuan_id', $id)
-    //         ->where('created_at', '>', session('last_check', now()))
-    //         ->get();
-
-    //     session(['last_check' => now()]);
-
-    //     Log::info('New messages fetched: ' . $chats->count());
-
-    //     return view('chatroom.chat-messages-list', compact('chats'));
-    // }
-
-    public function getNewMessages($id)
-    {
-        if (!auth()->check()) {
-            return response('Unauthorized', 401);
-        }
-
-        $chats = Chat::where('pengajuan_pertemuan_id', $id)
-            ->where('created_at', '>', session('last_check', now()))
-            ->get();
-
-        session(['last_check' => now()]);
-
-        return view('chatroom.chat-message-list', compact('chats'));
+        // Karena dikirim lewat AJAX, kembalikan JSON
+        return response()->json(['status' => 'success', 'message' => 'Pesan terkirim']);
     }
 }

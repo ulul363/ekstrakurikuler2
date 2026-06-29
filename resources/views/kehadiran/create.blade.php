@@ -68,10 +68,21 @@
 
                             <div class="form-group">
                                 <label for="deskripsi">Deskripsi</label>
-                                <textarea name="deskripsi" id="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" required style="width: 100%; height: 150px;">{{ old('deskripsi') }}</textarea>
+                                <textarea name="deskripsi" id="deskripsi"
+                                    class="form-control @error('deskripsi') is-invalid @enderror" required
+                                    style="width: 100%; height: 150px;">{{ old('deskripsi') }}</textarea>
                                 @error('deskripsi')
                                     <span class="invalid-feedback" role="alert">{{ $message }}</span>
                                 @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="jumlah_hadir">Jumlah Hadir</label>
+                                <input type="number" name="jumlah_hadir" class="form-control" placeholder="Jumlah Hadir"
+                                    required>
+                                <label for="jumlah_anggota">Jumlah Anggota</label>
+                                <input type="number" name="jumlah_anggota" class="form-control" placeholder="Total Anggota"
+                                    required>
                             </div>
 
                             <div class="form-group">
@@ -102,7 +113,7 @@
             const file = document.querySelector('input[type=file]').files[0];
             const reader = new FileReader();
 
-            reader.onloadend = function() {
+            reader.onloadend = function () {
                 const fileType = file.type;
                 if (fileType.startsWith('image')) {
                     preview.innerHTML =
@@ -122,7 +133,7 @@
     </script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#tahun_ajaran').datepicker({
                 format: "yyyy",
                 viewMode: "years",

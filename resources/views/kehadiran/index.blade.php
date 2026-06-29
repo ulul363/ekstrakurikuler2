@@ -60,178 +60,187 @@
                                 </a>
                             @endif
                         @endcan
-
-                        <table id="tabelPembinaKehadiran" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Kegiatan</th>
-                                    <th>Tahun Ajaran</th>
-                                    <th>Tanggal</th>
-                                    <th>Berkas</th>
-                                    <th>Deskripsi</th>
-                                    <th>Diverifikasi oleh</th>
-                                    <th>Status</th>
-                                    <th>Keterangan</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($kehadiran as $item)
+                        <div class="table-responsive">
+                            <table id="tabelPembinaKehadiran" class="table table-bordered">
+                                <thead>
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->nama_kegiatan }}</td>
-                                        <td>{{ $item->tahun_ajaran }}</td>
-                                        <td>{{ $item->tanggal }}</td>
-                                        <td>
-                                            <a href="{{ asset('storage/' . $item->berkas) }}" target="_blank">Lihat
-                                                Berkas</a>
-                                        </td>
-                                        <td>{{ $item->deskripsi }}</td>
-                                        <td>
-                                            @if ($item->pembina && $item->pembina->nama)
-                                                {{ $item->pembina->nama }}
-                                            @else
-                                                Belum diverifikasi
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->status == 'pending')
-                                                <span class="badge badge-warning">Pending</span>
-                                            @elseif ($item->status == 'disetujui')
-                                                <span class="badge badge-success">Disetujui</span>
-                                            @elseif ($item->status == 'ditolak')
-                                                <span class="badge badge-danger">Ditolak</span>
-                                            @else
-                                                <span class="badge badge-secondary">{{ $item->status }}</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{ $item->keterangan ?? 'Tidak ada keterangan' }}
-                                        </td>
-                                        <td>
-                                            @if (auth()->user()->hasRole('Pembina'))
-                                                @if ($item->status == 'pending')
-                                                    @can('kehadiran.verifikasi')
-                                                        <form id="form-verifikasi-disetujui-{{ $item->id_kehadiran }}"
-                                                            action="{{ route('kehadiran.verifikasi', $item->id_kehadiran) }}"
-                                                            method="POST" style="display: none;">
-                                                            @csrf
-                                                            <input type="hidden" name="status" value="disetujui">
-                                                            <input type="hidden" name="keterangan"
-                                                                id="keterangan-disetujui-{{ $item->id_kehadiran }}">
-                                                        </form>
-                                                        <button type="button" class="btn btn-success btn-sm"
-                                                            onclick="confirmVerification('form-verifikasi-disetujui-{{ $item->id_kehadiran }}', 'disetujui')">
-                                                            Disetujui
-                                                        </button>
-
-                                                        <form id="form-verifikasi-ditolak-{{ $item->id_kehadiran }}"
-                                                            action="{{ route('kehadiran.verifikasi', $item->id_kehadiran) }}"
-                                                            method="POST" style="display: none;">
-                                                            @csrf
-                                                            <input type="hidden" name="status" value="ditolak">
-                                                            <input type="hidden" name="keterangan"
-                                                                id="keterangan-ditolak-{{ $item->id_kehadiran }}">
-                                                        </form>
-                                                        <button type="button" class="btn btn-danger btn-sm"
-                                                            onclick="confirmVerification('form-verifikasi-ditolak-{{ $item->id_kehadiran }}', 'ditolak')">
-                                                            Ditolak
-                                                        </button>
-                                                    @endcan
+                                        <th>No</th>
+                                        <th>Nama Kegiatan</th>
+                                        <th>Tahun Ajaran</th>
+                                        <th>Tanggal</th>
+                                        <th>Berkas</th>
+                                        <th>Deskripsi</th>
+                                        <th>Diverifikasi oleh</th>
+                                        <th>Status</th>
+                                        <th>Keterangan Pembina</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($kehadiran as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->nama_kegiatan }}</td>
+                                            <td>{{ $item->tahun_ajaran }}</td>
+                                            <td>{{ $item->tanggal }}</td>
+                                            <td>
+                                                <a href="{{ asset('storage/' . $item->berkas) }}" target="_blank">Lihat
+                                                    Berkas</a>
+                                            </td>
+                                            <td>{{ $item->deskripsi }}</td>
+                                            <td>
+                                                @if ($item->pembina && $item->pembina->nama)
+                                                    {{ $item->pembina->nama }}
                                                 @else
-                                                    @can('kehadiran.show')
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                                            data-target="#showModal{{ $item->id_kehadiran }}">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-                                                    @endcan
+                                                    Belum diverifikasi
                                                 @endif
-                                            @elseif (auth()->user()->hasRole('Ketua'))
+                                            </td>
+                                            <td>
                                                 @if ($item->status == 'pending')
-                                                    <form id="delete-kehadiran-{{ $item->id_kehadiran }}"
-                                                        action="{{ route('kehadiran.destroy', $item->id_kehadiran) }}"
-                                                        method="POST" style="display:inline;">
-                                                        @can('kehadiran.edit')
-                                                            <a href="{{ route('kehadiran.edit', $item->id_kehadiran) }}"
-                                                                class="btn btn-warning btn-sm">
-                                                                <i class="fa fa-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('kehadiran.destroy')
-                                                            @csrf
-                                                            @method('DELETE')
+                                                    <span class="badge badge-warning">Pending</span>
+                                                @elseif ($item->status == 'disetujui')
+                                                    <span class="badge badge-success">Disetujui</span>
+                                                @elseif ($item->status == 'ditolak')
+                                                    <span class="badge badge-danger">Ditolak</span>
+                                                @else
+                                                    <span class="badge badge-secondary">{{ $item->status }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ $item->keterangan ?? 'Tidak ada keterangan' }}
+                                            </td>
+                                            <td>
+                                                @if (auth()->user()->hasRole('Pembina'))
+                                                    @if ($item->status == 'pending')
+                                                        @can('kehadiran.verifikasi')
+                                                            <!-- Pastikan $item->id_kehadiran atau $item->id (sesuaikan dengan nama kolom primary key di database Abang) -->
+                                                            <form id="form-verifikasi-disetujui-{{ $item->id }}" 
+                                                                action="{{ route('kehadiran.verifikasi', $item->id) }}" 
+                                                                method="POST" style="display: none;">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="disetujui">
+                                                                <input type="hidden" name="keterangan_pembina" id="ket-setuju-{{ $item->id }}">
+                                                            </form>
+                                                            <button type="button" class="btn btn-success btn-sm"
+                                                                onclick="confirmVerification('form-verifikasi-disetujui-{{ $item->id_kehadiran }}', 'disetujui')">
+                                                                Disetujui
+                                                            </button>
+
+                                                            <form id="form-verifikasi-ditolak-{{ $item->id_kehadiran }}"
+                                                                action="{{ route('kehadiran.verifikasi', $item->id_kehadiran) }}"
+                                                                method="POST" style="display: none;">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="ditolak">
+                                                                <input type="hidden" name="keterangan"
+                                                                    id="keterangan-ditolak-{{ $item->id_kehadiran }}">
+                                                            </form>
                                                             <button type="button" class="btn btn-danger btn-sm"
-                                                                onclick="confirmDelete('delete-kehadiran-{{ $item->id_kehadiran }}')">
-                                                                <i class="fa fa-trash"></i>
+                                                                    onclick="confirmVerification('form-verifikasi-ditolak-{{ $item->id }}', 'ditolak')">
+                                                                Tolak
+                                                            </button>
+
+                                                            <form id="form-verifikasi-ditolak-{{ $item->id }}" 
+                                                                action="{{ route('kehadiran.verifikasi', $item->id) }}" 
+                                                                method="POST" style="display: none;">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="ditolak">
+                                                                <input type="hidden" name="keterangan_pembina" id="ket-tolak-{{ $item->id }}">
+                                                            </form>
+                                                        @endcan
+                                                    @else
+                                                        @can('kehadiran.show')
+                                                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                                                data-target="#showModal{{ $item->id_kehadiran }}">
+                                                                <i class="fa fa-eye"></i>
                                                             </button>
                                                         @endcan
-                                                    </form>
-                                                    @can('kehadiran.show')
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                                            data-target="#showModal{{ $item->id_kehadiran }}">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-                                                    @endcan
-                                                @else
-                                                    @can('kehadiran.show')
-                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                                            data-target="#showModal{{ $item->id_kehadiran }}">
-                                                            <i class="fa fa-eye"></i>
-                                                        </button>
-                                                    @endcan
+                                                    @endif
+                                                @elseif (auth()->user()->hasRole('Ketua'))
+                                                    @if ($item->status == 'pending')
+                                                        <form id="delete-kehadiran-{{ $item->id_kehadiran }}"
+                                                            action="{{ route('kehadiran.destroy', $item->id_kehadiran) }}" method="POST"
+                                                            style="display:inline;">
+                                                            @can('kehadiran.edit')
+                                                                <a href="{{ route('kehadiran.edit', $item->id_kehadiran) }}"
+                                                                    class="btn btn-warning btn-sm">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </a>
+                                                            @endcan
+                                                            @can('kehadiran.destroy')
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="button" class="btn btn-danger btn-sm"
+                                                                    onclick="confirmDelete('delete-kehadiran-{{ $item->id_kehadiran }}')">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                            @endcan
+                                                        </form>
+                                                        @can('kehadiran.show')
+                                                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                                                data-target="#showModal{{ $item->id_kehadiran }}">
+                                                                <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        @endcan
+                                                    @else
+                                                        @can('kehadiran.show')
+                                                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                                                                data-target="#showModal{{ $item->id_kehadiran }}">
+                                                                <i class="fa fa-eye"></i>
+                                                            </button>
+                                                        @endcan
+                                                    @endif
                                                 @endif
-                                            @endif
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
 
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="showModal{{ $item->id_kehadiran }}" tabindex="-1"
-                                        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Detail Kehadiran</h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p><strong>Ketua:</strong> {{ $item->ketua->nama }}</p>
-                                                    <p><strong>Tanggal:</strong> {{ $item->tanggal }}</p>
-                                                    <p><strong>Berkas:</strong>
-                                                        <a href="{{ asset('storage/' . $item->berkas) }}"
-                                                            target="_blank">{{ $item->berkas }}</a>
-                                                    </p>
-                                                    <p><strong>Diverifikasi oleh:</strong>
-                                                        @if ($item->pembina && $item->pembina->nama)
-                                                            {{ $item->pembina->nama }}
-                                                        @else
-                                                            Belum diverifikasi
-                                                        @endif
-                                                    </p>
-                                                     <p><strong>Keterangan:</strong> {{ $item->keterangan }}</p>
-                                                    <p><strong>Status:</strong>
-                                                        @if ($item->status == 'pending')
-                                                            <span class="badge badge-warning">Pending</span>
-                                                        @elseif ($item->status == 'disetujui')
-                                                            <span class="badge badge-success">Disetujui</span>
-                                                        @elseif ($item->status == 'ditolak')
-                                                            <span class="badge badge-danger">Ditolak</span>
-                                                        @endif
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-dismiss="modal">Close</button>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="showModal{{ $item->id_kehadiran }}" tabindex="-1"
+                                            role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Detail Kehadiran</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p><strong>Ketua:</strong> {{ $item->ketua->nama }}</p>
+                                                        <p><strong>Tanggal:</strong> {{ $item->tanggal }}</p>
+                                                        <p><strong>Berkas:</strong>
+                                                            <a href="{{ asset('storage/' . $item->berkas) }}"
+                                                                target="_blank">{{ $item->berkas }}</a>
+                                                        </p>
+                                                        <p><strong>Diverifikasi oleh:</strong>
+                                                            @if ($item->pembina && $item->pembina->nama)
+                                                                {{ $item->pembina->nama }}
+                                                            @else
+                                                                Belum diverifikasi
+                                                            @endif
+                                                        </p>
+                                                        <p><strong>Keterangan:</strong> {{ $item->keterangan }}</p>
+                                                        <p><strong>Status:</strong>
+                                                            @if ($item->status == 'pending')
+                                                                <span class="badge badge-warning">Pending</span>
+                                                            @elseif ($item->status == 'disetujui')
+                                                                <span class="badge badge-success">Disetujui</span>
+                                                            @elseif ($item->status == 'ditolak')
+                                                                <span class="badge badge-danger">Ditolak</span>
+                                                            @endif
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -268,22 +277,21 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Set the textarea value to the hidden input field
-                    const form = document.getElementById(formId);
-                    const keteranganInput = form.querySelector('input[name="keterangan"]');
-                    if (!keteranganInput) {
-                        // Create hidden input if it does not exist
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'keterangan';
-                        hiddenInput.value = result.value;
-                        form.appendChild(hiddenInput);
-                    } else {
-                        // Update existing hidden input
-                        keteranganInput.value = result.value;
-                    }
-                    form.submit();
-                }
+            const form = document.getElementById(formId);
+            // 👇 PERBAIKAN: Harus 'keterangan_pembina' sesuai Controller 👇
+            let keteranganInput = form.querySelector('input[name="keterangan_pembina"]');
+            
+            if (!keteranganInput) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'keterangan_pembina'; // Sesuai Controller!
+                hiddenInput.value = result.value;
+                form.appendChild(hiddenInput);
+            } else {
+                keteranganInput.value = result.value;
+            }
+            form.submit();
+        }
             });
         }
 

@@ -2,43 +2,33 @@
 
 namespace App\Models;
 
-use App\Models\Ketua;
-use App\Models\Pembina;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class PengajuanPertemuan extends Model
 {
     use HasFactory;
 
     protected $table = 'pengajuan_pertemuan';
-    protected $primaryKey = 'id_pengajuan_pertemuan';
+    protected $primaryKey = 'id_pengajuan';
 
     protected $fillable = [
+        'ekstrakurikuler_id',
         'ketua_id',
         'pembina_id',
-        'verifikasi_id',
-        'hari',
-        'tanggal',
-        'waktu',
-        'waktu_verifikasi',
+        'judul_pertemuan',
+        'tanggal_rencana',
+        'waktu_rencana',
+        'agenda_pertemuan',
         'status',
-        'keterangan'
+        'keterangan_pembina'
     ];
 
-    // Tambahkan jika 'tanggal' dan 'waktu' perlu di-cast ke tipe tertentu
-    protected $casts = [
-        'tanggal' => 'date:Y-m-d', // Ganti format jika perlu
-        'waktu' => 'datetime:H:i', // Ganti format jika perlu
-        'waktu_verifikasi' => 'datetime:H:i', // Pastikan format yang sesuai
-    ];
-
-    public function getWaktuVerifikasiAttribute($value)
+    public function ekstrakurikuler()
     {
-        return $value ? Carbon::parse($value) : null;
+        return $this->belongsTo(Ekstrakurikuler::class, 'ekstrakurikuler_id', 'id_ekstrakurikuler');
     }
-        
+
     public function ketua()
     {
         return $this->belongsTo(Ketua::class, 'ketua_id', 'id_ketua');
